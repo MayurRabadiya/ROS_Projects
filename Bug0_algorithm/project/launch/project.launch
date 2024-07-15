@@ -1,0 +1,14 @@
+<launch>
+    <!-- Define arguments for the desired x and y positions -->
+    <arg name="des_x" />
+    <arg name="des_y" />
+
+    <!-- Set parameters for the desired x and y positions using the arguments -->
+    <param name="des_pos_x" value="$(arg des_x)" />
+    <param name="des_pos_y" value="$(arg des_y)" />
+
+    <!-- Define the node to be launched -->
+    <node pkg="project" type="bug.py" name="bug" output="screen">
+        <!-- Add additional parameters or remappings here if needed -->
+    </node>
+</launch>

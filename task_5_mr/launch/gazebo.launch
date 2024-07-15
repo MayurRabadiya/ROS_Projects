@@ -1,0 +1,63 @@
+<launch>
+	<!-- Define arguments for customization -->
+	<arg name="namespace" default="GETbot"/>
+	<arg name="tf_prefix" default="GETbot"/>
+	<arg name="world" default="obstacles.world"/>
+	<arg name="visualize" default="false"/>
+	<arg name="enable_camera" default="false"/>
+
+	<arg name="paused" default="false"/>
+	<arg name="use_sim_time" default="true"/>
+	<arg name="gui" default="true"/>
+	<arg name="headless" default="false"/>
+	<arg name="debug" default="false"/>
+
+	<arg name="verbose" default="false"/>
+	<arg name="physics" default="ode"/>
+
+	<arg name="extra_gazebo_args" default=""/>
+	<arg name="recording" default="false"/>
+
+	<arg name="respawn_gazebo" default="false"/>
+	<arg name="use_clock_frequency" default="false"/>
+	<arg name="pub_clock_frequency" default="100"/>
+
+	<!-- Set use_sim_time flag -->
+	<param name="/use_sim_time" value="$(arg use_sim_time)"/>
+
+	<!-- Set command arguments based on conditions -->
+	<arg unless="$(arg paused)" name="command_arg1" value=""/>
+	<arg     if="$(arg paused)" name="command_arg1" value="-u"/>
+	<arg unless="$(arg recording)" name="command_arg2" value=""/>
+	<arg     if="$(arg recording)" name="command_arg2" value="-r"/>
+	<arg unless="$(arg verbose)" name="command_arg3" value=""/>
+	<arg     if="$(arg verbose)" name="command_arg3" value="--verbose"/>
+	<arg unless="$(arg debug)" name="script_type" value="gzserver"/>
+	<arg     if="$(arg debug)" name="script_type" value="debug"/>
+
+	<!-- Start gazebo server -->
+	<group if="$(arg use_clock_frequency)">
+	    <param name="gazebo/pub_clock_frequency" value="$(arg pub_clock_frequency)" />
+	</group>
+
+	<!-- Launch Gazebo server with specified arguments -->
+	<node name="gazebo" pkg="gazebo_ros" type="$(arg script_type)" respawn="$(arg respawn_gazebo)" output="screen"
+	    args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) -e $(arg physics) $(arg extra_gazebo_args) $(find task_5_mr)/worlds/$(arg world)" />
+
+	<!-- Start gazebo client (GUI) if enabled -->
+	<group if="$(arg gui)">
+	    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+	</group>
+
+	<!-- Load the URDF description into the ROS Parameter Server -->
+	<param name="robot_description"
+	    command="rosrun xacro xacro --inorder '$(find getbot_description)/urdf/getbot.xacro' visualize:=$(arg visualize) enable_camera:=$(arg enable_camera)"/>
+
+	<!-- Spawn the URDF model in Gazebo -->
+	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	    args="-urdf -model GETbot -param robot_description -z 0.5"/>
+
+	<!-- Publish joint states as TF transforms for visualization -->
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"/>
+
+    </launch>

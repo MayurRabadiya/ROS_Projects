@@ -1,0 +1,13 @@
+<launch>
+
+	<!-- Define an argument for the world file -->
+	<arg name="world" default="obstacles.world" />
+
+	<!-- Set use_sim_time parameter to true -->
+	<param name="/use_sim_time" value="true" />
+
+	<!-- Launch the Stage simulation node -->
+	<node pkg="stage_ros" name="stageros" type="stageros"
+		args="$(find task_5_mr)/stage/$(arg world)" required="true" />
+
+</launch>
