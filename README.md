@@ -5,7 +5,7 @@ This repository contains the projects I have done using ROS and the GAZEBO simul
 
 ## Projects Overview
 
-### Bug0 Algorithm for Robot Navigation in a Maze
+### Bug0_algorithm
 
 This project implements the Bug0 algorithm to autonomously navigate a robot within a maze environment using ROS (Robot Operating System). The ROS node responsible for controlling the robot receives inputs including the maze map and the robot's current position. Using this information, the node computes the next optimal position for the robot based on the Bug0 algorithm. The calculated position is then sent to the robot's controller for execution.
 
